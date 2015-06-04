@@ -23,6 +23,21 @@ def autoconfig(ignore=None):
       ``myapp`` the package must be named ``myapp`` as well (not ``my-app`` or
       ``MyApp``).
 
+    * If the setup.py differs from the package name, it's possible
+    to specify the module morepath should scan using entry points::
+
+        setup(name='some-package',
+          ...
+          install_requires=[
+              'setuptools',
+              'morepath'
+          ],
+          entry_points={
+              'morepath': [
+                  'autoimport = somepackage',
+              ]
+          })
+
     This function creates a :class:`Config` object as with :func:`setup`, but
     before returning it scans all packages, looking for those that depend on
     Morepath directly or indirectly. This includes the package that
@@ -153,12 +168,32 @@ def morepath_packages():
         yield import_package(distribution)
 
 
+def get_module_name(distribution):
+    """ Determines the module name to import from the given distribution.
+
+    If an entry point named ``autoimport`` is found in the group ``morepath``,
+    it's value is used. If not, the project_name is used.
+
+    See :func:`autoconfig` for details and an example.
+
+    """
+    if hasattr(distribution, 'get_entry_map'):
+        entry_points = distribution.get_entry_map('morepath')
+    else:
+        entry_points = None
+
+    if entry_points and 'autoimport' in entry_points:
+        return entry_points['autoimport'].module_name
+    else:
+        return distribution.project_name
+
+
 def import_package(distribution):
     """ Takes a pkg_resources distribution and loads the module contained
     in it, if it matches the rules layed out in :func:`autoconfig`.
 
     """
     try:
-        return importlib.import_module(distribution.project_name)
+        return importlib.import_module(get_module_name(distribution))
     except ImportError:
         raise AutoImportError(distribution.project_name)
