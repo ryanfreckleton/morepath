@@ -34,7 +34,7 @@ def autoconfig(ignore=None):
           ],
           entry_points={
               'morepath': [
-                  'autoimport = somepackage',
+                  'scan = somepackage',
               ]
           })
 
@@ -171,7 +171,7 @@ def morepath_packages():
 def get_module_name(distribution):
     """ Determines the module name to import from the given distribution.
 
-    If an entry point named ``autoimport`` is found in the group ``morepath``,
+    If an entry point named ``scan`` is found in the group ``morepath``,
     it's value is used. If not, the project_name is used.
 
     See :func:`autoconfig` for details and an example.
@@ -182,8 +182,8 @@ def get_module_name(distribution):
     else:
         entry_points = None
 
-    if entry_points and 'autoimport' in entry_points:
-        return entry_points['autoimport'].module_name
+    if entry_points and 'scan' in entry_points:
+        return entry_points['scan'].module_name
     else:
         return distribution.project_name
 

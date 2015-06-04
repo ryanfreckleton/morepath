@@ -170,7 +170,7 @@ that each package has to fulfill to be considered.
       ...
       entry_points={
           'morepath': [
-              'autoimport = my.package'
+              'scan = my.package'
           ]
       }
 

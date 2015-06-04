@@ -14,6 +14,6 @@ setup(name='entry-point',
       ],
       entry_points={
           'morepath': [
-              'autoimport = entrypoint',
+              'scan = entrypoint',
           ]
       })
