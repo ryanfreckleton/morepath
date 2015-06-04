@@ -22,14 +22,16 @@ of your application to your WSGI server::
       config = morepath.setup()
       config.scan()
       config.commit()
-      morepath.run(App())
 
-Morepath will always scan itself first, then whatever packages you whish to
+      application = App()
+      morepath.run(application)
+
+Morepath always scans itself first, then whatever packages you wish to
 scan. In the example above, it scans itself during ``morepath.setup``, handing
 over the configuration object to you.
 
-``config.scan`` will then scan whatever package it is handed. If it receives
-no package, it will scan the package it is called from. That's the current
+``config.scan`` then scans whatever package it is handed. If it receives
+no package, it scans the package it is called from. That's the current
 file in the example above.
 
 Once all scanning is completed, the configuration is committed and the
@@ -37,6 +39,10 @@ application may be run.
 
 Scanning dependencies
 ---------------------
+
+Morepath is a micro-framework at its core. It's very extensible however, so you
+can expand it with other packages that add extra functionality to it. For
+instance, you can use...
 
 Morepath aims to be a micro framework, so you probably want to use other
 packages that add extra functionality to Morepath. For instance, you might use
@@ -51,10 +57,10 @@ configuration also needs to be loaded by Morepath before Morepath is run.
 Manual scan
 ~~~~~~~~~~~
 
-If you like to stay away from magic as much as possible, you can use manual
-scanning. Say you depend on
-`more.jinja2 <https://github.com/morepath/more.jinja2>`_ and you want to
-extend the example from above.
+The most explicit way of scanning your dependencies is a manual scan.
+
+Say you depend on `more.jinja2 <https://github.com/morepath/more.jinja2>`_
+and you want to extend the the first example.
 
 This is what you do::
 
@@ -65,7 +71,9 @@ This is what you do::
       config.scan(more.jinja2)
       config.scan()
       config.commit()
-      morepath.run(App())
+
+      application = App()
+      morepath.run(application)
 
 As you can see, you need to import your dependency and scan it using
 ``config.scan``. If you have more dependencies, just add them in this fashion.
@@ -76,7 +84,7 @@ Automatic scan
 Manual scanning can get tedious as you need to add each and every new
 dependency that you rely on.
 
-Instead, you may use the ``autoconfig`` method, which will try to scan
+Instead, you may use the ``autoconfig`` method, which tries to scan
 all packages which themselves depend on Morepath. To use this method,
 the example from above has to be changed slightly. Note how we no longer
 use ``morepath.setup``::
@@ -85,7 +93,9 @@ use ``morepath.setup``::
       config = morepath.autoconfig()
       config.scan()
       config.commit()
-      morepath.run(App())
+
+      application = App()
+      morepath.run(application)
 
 
 As you can see, we also don't need to import any dependencies anymore. We still
@@ -98,20 +108,18 @@ Then the file containing the configuration code might not need scanning.
 Autosetup
 ~~~~~~~~~
 
-If you don't need to scan the file you are running the configuration from,
-you can get away with very little code.
+In the previous example we still needed to scan the startup module itself,
+so that is why we need config.scan(). You can however instead turn your code
+into a full Morepath project with a setup.py and do away with this requirement.
 
-Combining the automatic scan from above with an automatic commit gives you
-this::
+See :doc:`organizing_your_project`.
+
+Once all your configuration is done inside of projects, you can simplify your
+the scan further::
 
   if __name__ == '__main__':
       morepath.autosetup()
       morepath.run(App())
-
-Now that you know how to scan yourself and your dependencies, what if you want
-to write your own package that can be scanned automatically?
-
-Read the next part to find out how.
 
 Writing scannable packages
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -121,13 +129,11 @@ that each package has to fulfill to be considered.
 
 1. The package must be made available using a ``setup.py`` file.
 
-  This should go without saying. Without a ``setup.py`` file your package is
-  not really a package in Morepath's eyes. So the package needs to have that
-  and it needs to be installed in your current environment (be it in your
-  global site-packages, in your virtualenv or in your buildout environment).
+  See `Setuptool's documentation <https://pythonhosted.org/setuptools/>`_
+  for more information.
 
 2. The package itself or a dependency of the package must include ``morepath``
-   in the ``install-requires`` list of the ``setup.py`` file.
+   in the ``install_requires`` list of the ``setup.py`` file.
 
   To avoid having to scan *all* packages, Morepath filters out packages which
   in no way depend on Morepath. If your package does, you need to add
@@ -139,46 +145,63 @@ that each package has to fulfill to be considered.
         'morepath'
       ])
 
-3. The module to import must be named after the package *(Alternative A)*
+3. The Python package must be either importable by naming convention or by
+   using entry points.
 
-  This means that the name inside ``setup.py`` is importable in Python. For
-  example: if the module inside the package is named ``myapp``, the package
-  must be named ``myapp`` as well (not ``my-app`` or ``MyApp``).
+  Naming convention:
 
-  Morepath tries to import the package name in this case. This is why this
-  works::
+    This means that the project name defined in ``setup.py`` is importable in
+    Python. For example: if the project inside the package is named ``myapp``,
+    the package must be named ``myapp`` as well (not ``my-app`` or ``MyApp``):
 
-    import myapp
+    So if you have a ``setup.py`` like this::
 
-  But this does not::
+        setup(name='myapp'
+          ...
 
-    import my-app
-    import MyApp
+    And a directory structure like this::
 
-  If you do not follow this naming convention, you don't need to rename
-  everything though, you may also tell Morepath explicitly what to do with
-  *Alternative* B below.
+      myapp/__init__p.py
+      setup.py
 
-3. The module to import must be listed in the ``entry_points``
-   *(Alternative B)*
+    Then this works::
 
-  If your package has a name that Morepath cannot import, then you need to tell
-  Morepath the actual module name it can. You can also do this if you want
-  to be explicit, or if you want Morepath to only scan parts of your package::
+      import myapp
 
-    setup(name='my-package'
-      ...
-      entry_points={
-          'morepath': [
-              'scan = my.package'
-          ]
-      }
+    But this does not::
 
-  If Morepath finds such a package, it will use the name in the
-  ``entry_points``, import it and then scan it.
+      import my-app
+      import MyApp
 
-  Note that you still need to have ``morepath`` in the ``install_requires``
-  list for this to work.
+    If you use a namespace package, you include the full name in the
+    ``setup.py``::
+
+      setup(name='my.app'
+        ...
+
+    And use a structure like this::
+       my/app/__init__.py
+       setup.py
+
+    If you do not follow this naming convention, you don't need to rename
+    everything though, you may also tell Morepath explicitly what to do with
+    *Alternative* B below.
+
+  Entry points:
+
+    You may have a reason for the project name to be different from the package
+    name. In this case you need to tell Morepath what to scan::
+
+      setup(name='my-package'
+        ...
+        entry_points={
+            'morepath': [
+                'scan = my.package'
+            ]
+        }
+
+    Note that you still need to have ``morepath`` in the ``install_requires``
+    list for this to work.
 
 More information
 ----------------
