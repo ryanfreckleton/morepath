@@ -379,7 +379,8 @@ def test_create_path():
     assert create_path(['c', 'b', 'a']) == '/a/b/c'
 
 
-# XXX removing /./ from paths and checking for ../
+def test_parse_path_dots():
+    assert parse_path(u'/a/b') == parse_path(u'/a/c/../b')
 
 
 def test_identifier():

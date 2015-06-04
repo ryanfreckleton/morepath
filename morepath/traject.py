@@ -1,3 +1,4 @@
+import posixpath
 import re
 from functools import total_ordering
 from .converter import IDENTITY_CONVERTER
@@ -280,9 +281,13 @@ def parse_path(path):
 
     A step is a string, such as 'foo', 'bar' and 'baz'.
     """
-    path = path.strip('/')
-    if not path:
+
+    # make sure dots are normalized away (may leave a single dot -> '.')
+    path = posixpath.normpath(path).strip('/')
+
+    if not path or path == '.':
         return []
+
     result = PATH_SEPARATOR.split(path)
     result.reverse()
     return result
