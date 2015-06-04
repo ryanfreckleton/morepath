@@ -1,3 +1,4 @@
+import posixpath
 import re
 from functools import total_ordering
 from .converter import IDENTITY_CONVERTER
@@ -292,6 +293,27 @@ def create_path(stack):
     """Builds a path from a stack.
     """
     return '/' + u'/'.join(reversed(stack))
+
+
+def normalize_path(path):
+    """ Normalizes the path as follows:
+
+    * Collapses dots (``/../blog`` -> ``/blog``)
+    * Ensures absolute paths (``./site`` -> ``/site``)
+    * Removes double-slashes (``//index`` -> ``/index``)
+
+    For example:
+
+        ``../static//../app.py`` is turned into ``/app.py``
+
+    """
+
+    # the path is always absolute
+    path = path.lstrip('.')
+
+    # normpath returns '.' instead of '' if the path is empty, we want '/'
+    path = posixpath.normpath(path)
+    return path if path != '.' else '/'
 
 
 def is_identifier(s):
