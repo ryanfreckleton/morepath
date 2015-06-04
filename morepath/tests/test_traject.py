@@ -383,7 +383,7 @@ def test_normalize_path():
     assert normalize_path('/a/..') == '/'
     assert normalize_path('/a/../../../../b') == '/b'
     assert normalize_path('/a/../c') == '/c'
-    assert normalize_path('/a/../../a/') == b'/a'
+    assert normalize_path('/a/../../a/') == '/a'
     assert normalize_path('/') == '/'
     assert normalize_path('') == '/'
     assert normalize_path('../../') == '/'
