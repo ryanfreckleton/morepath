@@ -447,7 +447,7 @@ class Config(object):
         :param package: The Python module or package to scan. Optional; if left
           empty case the calling package is scanned.
         :param ignore: A Venusian_ style ignore to ignore some modules during
-          scanning. Optional. Defaults to ``['.test', '.tests']`.
+          scanning. Optional. Defaults to ``['.test', '.tests']``.
         :param recursive: Scan packages recursively. By default this is
           ``True``. If set to ``False``, only the ``__init__.py`` of a package
           is scanned.

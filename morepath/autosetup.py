@@ -13,17 +13,17 @@ def autoconfig(ignore=None):
     This function tries to load needed Morepath configuration from all
     packages automatically. This only works if:
 
-    * The package is made available using a ``setup.py`` file.
+     - The package is made available using a ``setup.py`` file.
 
-    * The package or a dependency of the package includes ``morepath`` in the
-      ``install_requires`` list of the ``setup.py`` file.
+     - The package or a dependency of the package includes ``morepath`` in the
+       ``install_requires`` list of the ``setup.py`` file.
 
-    * The setup.py name is the same as the name of the distributed package
-      or module. For example: if the module inside the package is named
-      ``myapp`` the package must be named ``myapp`` as well (not ``my-app`` or
-      ``MyApp``).
+     - The setup.py name is the same as the name of the distributed package
+       or module. For example: if the module inside the package is named
+       ``myapp`` the package must be named ``myapp`` as well (not ``my-app`` or
+       ``MyApp``).
 
-    * If the setup.py differs from the package name, it's possible
+    If the setup.py differs from the package name, it's possible
     to specify the module morepath should scan using entry points::
 
         setup(name='some-package',

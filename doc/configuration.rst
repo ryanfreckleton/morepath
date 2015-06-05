@@ -107,7 +107,7 @@ Autosetup
 
 In the previous example we still needed to scan the startup module itself,
 so that is why we need ``config.scan()``. Instead, you can however turn your
-code into a full Morepath project with a setup.py and do away with this 
+code into a full Morepath project with a setup.py and do away with this
 requirement.
 
 See :doc:`organizing_your_project`.
@@ -178,6 +178,7 @@ that each package has to fulfill to be considered.
         ...
 
     And use a structure like this::
+
        my/app/__init__.py
        setup.py
 
@@ -185,7 +186,7 @@ that each package has to fulfill to be considered.
     everything though, you may also tell Morepath explicitly what to do by
     using entry points.
 
-  Entry points:
+  With entry points:
 
     You may have a reason for the project name to be different from the package
     name. In this case you need to tell Morepath what to scan::
