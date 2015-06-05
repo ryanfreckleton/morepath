@@ -42,10 +42,7 @@ Scanning dependencies
 
 Morepath is a micro-framework at its core. It's very extensible however, so you
 can expand it with other packages that add extra functionality to it. For
-instance, you can use...
-
-Morepath aims to be a micro framework, so you probably want to use other
-packages that add extra functionality to Morepath. For instance, you might use
+instance, you can use
 `more.chameleon <https://github.com/morepath/more.chameleon>`_
 for templating or
 `more.transaction <https://github.com/morepath/more.transaction>`_
@@ -85,9 +82,10 @@ Manual scanning can get tedious as you need to add each and every new
 dependency that you rely on.
 
 Instead, you may use the ``autoconfig`` method, which tries to scan
-all packages which themselves depend on Morepath. To use this method,
-the example from above has to be changed slightly. Note how we no longer
-use ``morepath.setup``::
+all packages depending on Morepath. To use this method, the example from above
+has to be changed slightly.
+
+Note how we no longer use ``morepath.setup``::
 
   if __name__ == '__main__':
       config = morepath.autoconfig()
@@ -96,7 +94,6 @@ use ``morepath.setup``::
 
       application = App()
       morepath.run(application)
-
 
 As you can see, we also don't need to import any dependencies anymore. We still
 need to run ``config.scan`` without parameters however, so our own file gets
@@ -109,13 +106,14 @@ Autosetup
 ~~~~~~~~~
 
 In the previous example we still needed to scan the startup module itself,
-so that is why we need config.scan(). You can however instead turn your code
-into a full Morepath project with a setup.py and do away with this requirement.
+so that is why we need ``config.scan()``. Instead, you can however turn your
+code into a full Morepath project with a setup.py and do away with this 
+requirement.
 
 See :doc:`organizing_your_project`.
 
 Once all your configuration is done inside of projects, you can simplify your
-the scan further::
+scan further::
 
   if __name__ == '__main__':
       morepath.autosetup()
@@ -148,16 +146,16 @@ that each package has to fulfill to be considered.
 3. The Python package must be either importable by naming convention or by
    using entry points.
 
-  Naming convention:
+  By naming convention:
 
-    This means that the project name defined in ``setup.py`` is importable in
+    Meaning the project name defined in ``setup.py`` is importable in
     Python. For example: if the project inside the package is named ``myapp``,
     the package must be named ``myapp`` as well (not ``my-app`` or ``MyApp``):
 
     So if you have a ``setup.py`` like this::
 
-        setup(name='myapp'
-          ...
+      setup(name='myapp'
+        ...
 
     And a directory structure like this::
 
@@ -184,8 +182,8 @@ that each package has to fulfill to be considered.
        setup.py
 
     If you do not follow this naming convention, you don't need to rename
-    everything though, you may also tell Morepath explicitly what to do with
-    *Alternative* B below.
+    everything though, you may also tell Morepath explicitly what to do by
+    using entry points.
 
   Entry points:
 
